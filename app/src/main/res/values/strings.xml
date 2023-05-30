@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Lion School</string>
     <string name="title_activity_course">Course</string>
+    <string name="title_activity_students">Students</string>
 </resources>

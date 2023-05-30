@@ -22,11 +22,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.senai.sp.jandira.lionschool.model.Courses
 import br.senai.sp.jandira.lionschool.model.CoursesList
+import br.senai.sp.jandira.lionschool.model.StudentsList
 import br.senai.sp.jandira.lionschool.service.RetrofitFactory
 import br.senai.sp.jandira.lionschool.ui.theme.LionSchoolTheme
 import coil.compose.AsyncImage
@@ -34,34 +36,39 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class Course : ComponentActivity() {
+class Students : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LionSchoolTheme {
-                Courses()
+                val siglaCurso = intent.getStringExtra("sigla")
+                Student(siglaCurso.toString())
             }
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun Courses() {
+fun Student(curso: String) {
     val context = LocalContext.current
 
-    var listCourses by remember {
-        mutableStateOf(listOf<Courses>())
+    var listStudents by remember {
+        mutableStateOf(listOf<br.senai.sp.jandira.lionschool.model.Students>())
     }
 
-    val call = RetrofitFactory().getCourseService().getCourse()
+    var nameCourse by remember {
+        mutableStateOf("")
+    }
 
-    call.enqueue(object : Callback<CoursesList> {
-        override fun onResponse(call: Call<CoursesList>, response: Response<CoursesList>) {
-            listCourses = response.body()!!.cursos
+    val call = RetrofitFactory().getStudentsService().getCourseStudent(curso)
+
+    call.enqueue(object : Callback<StudentsList> {
+        override fun onResponse(call: Call<StudentsList>, response: Response<StudentsList>) {
+            listStudents = response.body()!!.alunos
+            nameCourse = response.body()!!.nomeCurso
         }
 
-        override fun onFailure(call: Call<CoursesList>, t: Throwable) {
+        override fun onFailure(call: Call<StudentsList>, t: Throwable) {
             Log.i("teste", "onFailure: ${t.message} ")
         }
     })
@@ -101,14 +108,13 @@ fun Courses() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Choose the course you want to access",
+                    text = "Course Students",
                     fontSize = 32.sp,
                     color = Color.White,
-                    modifier = Modifier.width(290.dp),
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif
                 )
-                Spacer(modifier = Modifier.size(25.dp))
+                Spacer(modifier = Modifier.size(15.dp))
                 OutlinedTextField(
                     value = "",
                     onValueChange = {},
@@ -118,7 +124,7 @@ fun Courses() {
                         unfocusedBorderColor = Color.White
                     ),
                     label = {
-                        Text(text = "Search for a course", color = Color.White)
+                        Text(text = "Search for a student", color = Color.White)
                     },
                     leadingIcon = {
                         Icon(
@@ -129,43 +135,51 @@ fun Courses() {
                     }
                 )
                 Spacer(modifier = Modifier.size(20.dp))
+                Text(
+                    text = nameCourse, fontSize = 25.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.SansSerif
+                )
+                Row() {
+                    Switch(checked = false, onCheckedChange = {})
+                    Switch(checked = true, onCheckedChange = {})
+                }
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(30.dp)
+                        .padding(40.dp)
                 ) {
-                    items(listCourses) {
+                    items(listStudents) {
                         Spacer(modifier = Modifier.size(20.dp))
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(100.dp)
-                                .clickable {
-                                    var openStudents = Intent(context, Students::class.java)
-                                    openStudents.putExtra("sigla", it.sigla)
-
-                                    context.startActivity(openStudents)
-                                },
-                            backgroundColor = Color(208, 220, 238),
+                                .height(250.dp),
+                            backgroundColor = Color(255, 194, 62),
                             shape = RoundedCornerShape(16.dp)
                         ) {
-                            Row(modifier = Modifier.padding(10.dp)) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(15.dp),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
                                 AsyncImage(
-                                    model = it.icone,
+                                    model = it.foto,
                                     contentDescription = "",
-                                    modifier = Modifier
-                                        .size(75.dp)
+                                    modifier = Modifier.size(130.dp)
                                 )
-                                Spacer(modifier = Modifier.size(10.dp))
-                                Column() {
-                                    Text(
-                                        text = it.sigla,
-                                        fontSize = 35.sp,
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.Bold,
-                                    )
-                                    Text(text = it.nome, fontSize = 15.sp)
-                                }
+
+                                Text(
+                                    text = it.nome,
+                                    color = Color.White,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    fontSize = 32.sp,
+                                    textAlign = TextAlign.Center
+                                )
                             }
 
                         }
@@ -177,3 +191,4 @@ fun Courses() {
         }
     }
 }
+
