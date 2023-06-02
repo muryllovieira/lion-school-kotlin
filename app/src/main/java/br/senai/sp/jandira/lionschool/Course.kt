@@ -62,7 +62,7 @@ fun Courses() {
         }
 
         override fun onFailure(call: Call<CoursesList>, t: Throwable) {
-            Log.i("teste", "onFailure: ${t.message} ")
+            Log.i("teste", "onFailure: ${t.message}")
         }
     })
 

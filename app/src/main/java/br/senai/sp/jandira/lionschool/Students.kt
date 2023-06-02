@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -152,12 +153,20 @@ fun Student(curso: String) {
                         .padding(40.dp)
                 ) {
                     items(listStudents) {
+
+                        var backgroundCard = Color(0, 0, 0)
+                        if (it.status == "Finalizado") {
+                            backgroundCard = Color(51, 71, 176, 255)
+                        } else {
+                            backgroundCard = Color(229, 182, 87, 255)
+                        }
+
                         Spacer(modifier = Modifier.size(20.dp))
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(250.dp),
-                            backgroundColor = Color(255, 194, 62),
+                            backgroundColor = backgroundCard,
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Column(
