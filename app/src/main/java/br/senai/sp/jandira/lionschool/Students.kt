@@ -97,7 +97,7 @@ fun Student(curso: String) {
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier.clickable {
-                        var openCourse = Intent(context, MainActivity::class.java)
+                        var openCourse = Intent(context, Courses::class.java)
 
                         context.startActivity(openCourse)
                     }
@@ -165,7 +165,12 @@ fun Student(curso: String) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(250.dp),
+                                .height(250.dp)
+                                .clickable {
+                                    var openPerformanceStudents = Intent(context, Students::class.java)
+
+                                    context.startActivity(openPerformanceStudents)
+                                },
                             backgroundColor = backgroundCard,
                             shape = RoundedCornerShape(16.dp)
                         ) {
