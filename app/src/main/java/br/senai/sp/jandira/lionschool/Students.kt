@@ -51,7 +51,11 @@ class Students : ComponentActivity() {
 
 @Composable
 fun Student(curso: String) {
+    
     val context = LocalContext.current
+
+    // Estado para controlar a opção selecionada
+    var selectedOption by remember { mutableStateOf(1) }
 
     var listStudents by remember {
         mutableStateOf(listOf<br.senai.sp.jandira.lionschool.model.Students>())
@@ -143,8 +147,24 @@ fun Student(curso: String) {
                     fontFamily = FontFamily.SansSerif
                 )
                 Row() {
-                    Switch(checked = false, onCheckedChange = {})
-                    Switch(checked = true, onCheckedChange = {})
+                    ToggleButton(selectedOption, onOptionSelected = { option ->
+                        selectedOption = option
+                        // Lógica para tratar a opção selecionada
+                        when (option) {
+                            1 -> {
+                                // Opção 1 selecionada
+                                // Faça algo aqui
+                            }
+                            2 -> {
+                                // Opção 2 selecionada
+                                // Faça algo aqui
+                            }
+                            3 -> {
+                                // Opção 3 selecionada
+                                // Faça algo aqui
+                            }
+                        }
+                    })
                 }
 
                 LazyColumn(
@@ -167,9 +187,12 @@ fun Student(curso: String) {
                                 .fillMaxWidth()
                                 .height(250.dp)
                                 .clickable {
-                                    var openPerformanceStudents = Intent(context, Students::class.java)
+                                    var openStudent =
+                                        Intent(context, PerformanceStudent::class.java)
+                                    openStudent.putExtra("matricula", it.matricula)
 
-                                    context.startActivity(openPerformanceStudents)
+                                    //start a Activity
+                                    context.startActivity(openStudent)
                                 },
                             backgroundColor = backgroundCard,
                             shape = RoundedCornerShape(16.dp)
@@ -186,7 +209,7 @@ fun Student(curso: String) {
                                     contentDescription = "",
                                     modifier = Modifier.size(130.dp)
                                 )
-
+                                Log.i("TAG", it.foto)
                                 Text(
                                     text = it.nome,
                                     color = Color.White,
@@ -194,6 +217,7 @@ fun Student(curso: String) {
                                     fontSize = 32.sp,
                                     textAlign = TextAlign.Center
                                 )
+                                Log.i("TAG", it.nome)
                             }
 
                         }
@@ -205,4 +229,40 @@ fun Student(curso: String) {
         }
     }
 }
+@Composable
+fun ToggleButton(selectedOption: Int, onOptionSelected: (Int) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        val options = listOf("Todos", "Cursando", "Finalizado")
+        options.forEachIndexed { index, option ->
+            val isSelected = index + 1 == selectedOption
+            Button(
+                onClick = { onOptionSelected(index + 1) },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(48.dp)
+                    .padding(horizontal = 6.dp),
+                shape = MaterialTheme.shapes.medium,
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = if (isSelected) colorResource(id = R.color.blue_default) else colorResource(
+                        id = R.color.second_blue
+                    ),
+                    contentColor = if (isSelected) colorResource(id = R.color.yellow_default) else colorResource(
+                        id = R.color.blue_default
+                    )
+                )
+            ) {
+                Text(
+                    text = option,
+                    style = MaterialTheme.typography.body1,
+                    fontSize = 16.sp
 
+                )
+            }
+        }
+    }
+}

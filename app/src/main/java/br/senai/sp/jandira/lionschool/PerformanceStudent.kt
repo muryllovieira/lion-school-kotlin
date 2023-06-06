@@ -2,15 +2,18 @@ package br.senai.sp.jandira.lionschool
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -24,24 +27,54 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.senai.sp.jandira.lionschool.model.Student
+import br.senai.sp.jandira.lionschool.model.Students
+import br.senai.sp.jandira.lionschool.model.StudentsList
+import br.senai.sp.jandira.lionschool.service.RetrofitFactory
 import br.senai.sp.jandira.lionschool.ui.theme.LionSchoolTheme
 import coil.compose.AsyncImage
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class PerformanceStudent : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LionSchoolTheme {
-                Performance()
+                val matriculaAluno = intent.getStringExtra("matricula")
+                Student(matriculaAluno.toString())
             }
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun Performance() {
+fun Performance(matricula: String) {
     val context = LocalContext.current
+
+    var student by remember {
+        mutableStateOf(Student("", "", "", emptyList()))
+    }
+
+    val call = RetrofitFactory().getStudentsService().getAlunosByMatricula(matricula)
+
+    call.enqueue(object : Callback<Student> {
+        override fun onResponse(call: Call<Student>, response: Response<Student>) {
+            if (response.isSuccessful) {
+                val studentResponse = response.body()
+                if (studentResponse != null) {
+                    student = studentResponse
+                }
+            } else {
+                Log.e("teste", "Erro na resposta da API: ${response.code()}")
+            }
+        }
+
+        override fun onFailure(call: Call<Student>, t: Throwable) {
+            Log.i("teste", "onFailure: ${t.message} ")
+        }
+    })
 
     Box(
         modifier = Modifier
@@ -86,48 +119,58 @@ fun Performance() {
                 )
                 Spacer(modifier = Modifier.size(40.dp))
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(350.dp)
-                        .padding(20.dp),
-                    backgroundColor = Color(51, 71, 176, 255),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(15.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.img),
-                            contentDescription = "",
-                            modifier = Modifier.size(130.dp)
-                        )
+                LazyColumn(){
+                    items(student.curso){
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(350.dp)
+                                .padding(20.dp),
+                            backgroundColor = Color(51, 71, 176, 255),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(15.dp),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Image(
+                                    painter = painterResource(R.drawable.img),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(130.dp)
+                                )
 
-                        Text(
-                            text = "Mariana Americana Arroba",
-                            color = Color.White,
-                            modifier = Modifier.fillMaxWidth(),
-                            fontSize = 32.sp,
-                            textAlign = TextAlign.Center
-                        )
+                                Text(
+                                    text = student.nome,
+                                    color = Color.White,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    fontSize = 32.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+
+                        }
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(350.dp)
+                                .padding(20.dp),
+                            backgroundColor = Color(141, 155, 232, 255),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text(text = "Grades", textAlign = TextAlign.Center)
+                        }
                     }
 
                 }
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(350.dp)
-                        .padding(20.dp),
-                    backgroundColor = Color(141, 155, 232, 255),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text(text = "Grades", textAlign = TextAlign.Center)
-                }
+
             }
     }
 }
 }
+
+
+
+
