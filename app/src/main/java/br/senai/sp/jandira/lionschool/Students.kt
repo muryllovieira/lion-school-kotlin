@@ -209,12 +209,11 @@ fun Student(curso: String) {
                                     contentDescription = "",
                                     modifier = Modifier.size(130.dp)
                                 )
-                                Log.i("TAG", it.foto)
                                 Text(
                                     text = it.nome,
                                     color = Color.White,
                                     modifier = Modifier.fillMaxWidth(),
-                                    fontSize = 32.sp,
+                                    fontSize = 28.sp,
                                     textAlign = TextAlign.Center
                                 )
                                 Log.i("TAG", it.nome)

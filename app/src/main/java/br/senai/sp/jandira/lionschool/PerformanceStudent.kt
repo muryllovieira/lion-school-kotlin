@@ -16,10 +16,12 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -43,7 +45,7 @@ class PerformanceStudent : ComponentActivity() {
         setContent {
             LionSchoolTheme {
                 val matriculaAluno = intent.getStringExtra("matricula")
-                Student(matriculaAluno.toString())
+                Performance(matriculaAluno.toString())
             }
         }
     }
@@ -86,7 +88,7 @@ fun Performance(matricula: String) {
                     )
                 )
             )
-    ){
+    ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier
@@ -99,9 +101,7 @@ fun Performance(matricula: String) {
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier.clickable {
-                        var openCourse = Intent(context, br.senai.sp.jandira.lionschool.model.Courses::class.java)
 
-                        context.startActivity(openCourse)
                     }
                 )
             }
@@ -119,8 +119,11 @@ fun Performance(matricula: String) {
                 )
                 Spacer(modifier = Modifier.size(40.dp))
 
-                LazyColumn(){
-                    items(student.curso){
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    items(student.curso) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -136,8 +139,8 @@ fun Performance(matricula: String) {
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Image(
-                                    painter = painterResource(R.drawable.img),
+                                AsyncImage(
+                                    model = student.foto,
                                     contentDescription = "",
                                     modifier = Modifier.size(130.dp)
                                 )
@@ -157,18 +160,77 @@ fun Performance(matricula: String) {
                                 .fillMaxWidth()
                                 .height(350.dp)
                                 .padding(20.dp),
-                            backgroundColor = Color(141, 155, 232, 255),
-                            shape = RoundedCornerShape(16.dp)
+                            shape = RoundedCornerShape(10.dp),
+                            backgroundColor = colorResource(id = R.color.third_blue_gradient)
                         ) {
-                            Text(text = "Grades", textAlign = TextAlign.Center)
+                            Spacer(modifier = Modifier.height(10.dp))
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                items(student.curso[0].disciplinas) {
+                                    var barra = 2.4 * it.media.toDouble()
+                                    var corBarra = colorResource(id = R.color.blue_default)
+
+                                    if (it.media.toDouble() > 60) {
+                                        corBarra = colorResource(id = R.color.blue_default)
+                                    } else if (it.media.toDouble() < 60 && it.media.toDouble() > 50) {
+                                        corBarra = colorResource(id = R.color.yellow_default)
+                                    } else {
+                                        corBarra = Color.Red
+                                    }
+                                    Column(
+                                        modifier = Modifier
+                                            .width(240.dp)
+                                            .height(40.dp)
+                                    ) {
+                                        Text(
+                                            text = it.nome,
+                                            fontWeight = FontWeight(700),
+                                            fontSize = 12.sp,
+                                            color = colorResource(id = R.color.black)
+                                        )
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .height(17.5.dp)
+                                                .width(240.dp)
+                                                .clip(RoundedCornerShape(10.dp))
+                                                .background(
+                                                    colorResource(id = R.color.second_blue)
+                                                )
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxHeight()
+                                                    .clip(RoundedCornerShape(10.dp))
+                                                    .background(
+                                                        corBarra
+                                                    )
+                                                    .width(barra.dp)
+                                                    .padding(0.dp, 0.dp, 5.dp, 0.dp),
+                                                contentAlignment = Alignment.CenterEnd
+                                            ) {
+                                                Text(
+                                                    text = it.media + "%",
+                                                    fontWeight = FontWeight(700),
+                                                    fontSize = 12.sp,
+                                                    color = colorResource(id = R.color.white)
+                                                )
+                                            }
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(15.dp))
+                                }
+                            }
                         }
                     }
 
                 }
 
             }
+        }
     }
-}
 }
 
 
