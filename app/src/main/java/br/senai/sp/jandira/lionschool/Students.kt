@@ -65,18 +65,47 @@ fun Student(curso: String) {
         mutableStateOf("")
     }
 
-    val call = RetrofitFactory().getStudentsService().getCourseStudent(curso)
+    // Função para obter a lista de alunos com base no status selecionado
+    fun fetchStudentsWithStatus(status: String) {
+        val call = RetrofitFactory().getStudentsService().getCourseStudentWithStatus(curso, status)
 
-    call.enqueue(object : Callback<StudentsList> {
-        override fun onResponse(call: Call<StudentsList>, response: Response<StudentsList>) {
-            listStudents = response.body()!!.alunos
-            nameCourse = response.body()!!.nomeCurso
-        }
 
-        override fun onFailure(call: Call<StudentsList>, t: Throwable) {
-            Log.i("teste", "onFailure: ${t.message} ")
+        call.enqueue(object : Callback<StudentsList> {
+            override fun onResponse(call: Call<StudentsList>, response: Response<StudentsList>) {
+                listStudents = response.body()?.alunos ?: emptyList()
+                nameCourse = response.body()?.nomeCurso ?: ""
+            }
+
+            override fun onFailure(call: Call<StudentsList>, t: Throwable) {
+                Log.i("teste", "onFailure: ${t.message} ")
+            }
+        })
+    }
+
+    // Atualizar a lista de alunos quando a opção selecionada mudar
+    LaunchedEffect(selectedOption) {
+        if (selectedOption == 1) {
+            val call = RetrofitFactory().getStudentsService().getCourseStudent(curso)
+
+            call.enqueue(object : Callback<StudentsList> {
+                override fun onResponse(call: Call<StudentsList>, response: Response<StudentsList>) {
+                    listStudents = response.body()?.alunos ?: emptyList()
+                    nameCourse = response.body()?.nomeCurso ?: ""
+                }
+
+                override fun onFailure(call: Call<StudentsList>, t: Throwable) {
+                    Log.i("teste", "onFailure: ${t.message} ")
+                }
+            })
+        } else {
+            val status = when (selectedOption) {
+                2 -> "Cursando"
+                3 -> "Finalizado"
+                else -> "Todos"
+            }
+            fetchStudentsWithStatus(status)
         }
-    })
+    }
 
     Box(
         modifier = Modifier
