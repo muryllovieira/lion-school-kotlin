@@ -157,7 +157,7 @@ fun Student(curso: String) {
                         focusedBorderColor = Color.Green,
                         unfocusedBorderColor = Color.White
                     ),
-                    label = {
+                label = {
                         Text(text = "Search for a student", color = Color.White)
                     },
                     leadingIcon = {
@@ -205,9 +205,9 @@ fun Student(curso: String) {
 
                         var backgroundCard = Color(0, 0, 0)
                         if (it.status == "Finalizado") {
-                            backgroundCard = Color(51, 71, 176, 255)
-                        } else {
                             backgroundCard = Color(229, 182, 87, 255)
+                        } else {
+                            backgroundCard = Color(51, 71, 176, 255)
                         }
 
                         Spacer(modifier = Modifier.size(20.dp))

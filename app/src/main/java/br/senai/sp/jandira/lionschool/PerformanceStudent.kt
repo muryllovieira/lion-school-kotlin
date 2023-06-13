@@ -117,7 +117,7 @@ fun Performance(matricula: String) {
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif
                 )
-                Spacer(modifier = Modifier.size(40.dp))
+                Spacer(modifier = Modifier.size(10.dp))
 
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
@@ -127,7 +127,7 @@ fun Performance(matricula: String) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(350.dp)
+                                .height(290.dp)
                                 .padding(20.dp),
                             backgroundColor = Color(51, 71, 176, 255),
                             shape = RoundedCornerShape(16.dp)
@@ -158,7 +158,7 @@ fun Performance(matricula: String) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(350.dp)
+                                .height(390.dp)
                                 .padding(20.dp),
                             shape = RoundedCornerShape(10.dp),
                             backgroundColor = colorResource(id = R.color.third_blue_gradient)
@@ -168,6 +168,7 @@ fun Performance(matricula: String) {
                                 modifier = Modifier.fillMaxSize(),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+
                                 items(student.curso[0].disciplinas) {
                                     var barra = 2.4 * it.media.toDouble()
                                     var corBarra = colorResource(id = R.color.blue_default)
@@ -179,6 +180,7 @@ fun Performance(matricula: String) {
                                     } else {
                                         corBarra = Color.Red
                                     }
+                                    Spacer(modifier = Modifier.height(15.dp))
                                     Column(
                                         modifier = Modifier
                                             .width(240.dp)
@@ -220,7 +222,6 @@ fun Performance(matricula: String) {
                                             }
                                         }
                                     }
-                                    Spacer(modifier = Modifier.height(15.dp))
                                 }
                             }
                         }
@@ -232,6 +233,7 @@ fun Performance(matricula: String) {
         }
     }
 }
+
 
 
 

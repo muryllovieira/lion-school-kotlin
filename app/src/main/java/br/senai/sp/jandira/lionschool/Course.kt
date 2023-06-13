@@ -50,6 +50,10 @@ class Course : ComponentActivity() {
 fun Courses() {
     val context = LocalContext.current
 
+    var nameCourseState by remember {
+        mutableStateOf("")
+    }
+
     var listCourses by remember {
         mutableStateOf(listOf<Courses>())
     }
@@ -65,6 +69,21 @@ fun Courses() {
             Log.i("teste", "onFailure: ${t.message}")
         }
     })
+
+    var listaCards = listCourses
+
+    fun filterByName (name: String) {
+
+        var listaNova = listCourses.filter {
+            val regex = Regex(name, RegexOption.IGNORE_CASE)
+            it.sigla.contains(regex)
+        }
+        if(!listaNova.isEmpty()){
+            listaCards = listaNova
+        }else if(name == ""){
+            listaCards = listCourses
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -110,8 +129,12 @@ fun Courses() {
                 )
                 Spacer(modifier = Modifier.size(25.dp))
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = nameCourseState,
+                    onValueChange = {
+                        nameCourseState = it
+
+                        filterByName(it)
+                    },
                     shape = RoundedCornerShape(24.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.Green,
@@ -134,7 +157,7 @@ fun Courses() {
                         .fillMaxWidth()
                         .padding(30.dp)
                 ) {
-                    items(listCourses) {
+                    items(listaCards) {
                         Spacer(modifier = Modifier.size(20.dp))
                         Card(
                             modifier = Modifier
